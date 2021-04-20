@@ -1,0 +1,72 @@
+---
+title: "Ejemplo Market Basket Analysis"
+author: "Ramiro Casó - Incae Business School"
+date: "4/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+library(arules)
+library(dplyr)
+library(tidyverse)
+library(arulesViz)
+data("Groceries")
+
+```
+
+### El Data Set y las reglas. 
+
+Para este ejemplo, estamos usando el dataset `Groceries` que viene en el paquete `arules`, un paquete específico para construir y visualizar reglas de asociación. 
+
+Se usa la función `apriori` para hallar las reglas. 
+
+```{r Los datos de compras, echo=TRUE, paged.print=TRUE}
+glimpse(Groceries)
+summary(Groceries)
+inspect(head(Groceries, 10))
+```
+
+### Construyendo las reglas y revisando las reglas.  
+
+Para hacer las reglas, utilizaremos la función `apriori` que pide como parámetros el set de datos y que definamos los valores de suporte y confianza que deseamos. 
+
+```{r construyendo reglas, echo=TRUE, paged.print=TRUE}
+groc_rules <- apriori(Groceries, parameter = list(supp=0.01, conf=0.03, target="rules"))
+```
+
+Ahora procedemos a ver las reglas usando el función `inspect`. Como son muchas reglas (566 reglas en total), vamos a revisar un subconjunto, definido por el lift. En este caso, queremos que nos muestre solo aquellas reglas cuyo lift es mayor que 3. 
+
+```{r echo=FALSE, paged.print=TRUE}
+inspect(subset(groc_rules, lift > 3))
+```
+
+También podemos ver un gráfico que nos presenta las reglas en un scatterplot que tiene la confianza en el eje de las Y's, el soporte en el eje de las X's y que usa el tono del color para señalar el lift, con colores más oscuros para lifs más altos. 
+
+```{r Scatterplor, message=FALSE, warning=FALSE}
+plot(groc_rules, interactive = FALSE)
+```
+
+Como seguimos tiendo muchas reglas, podemos también filtrar las reglas con mayor lift y guardarlas en un objeto nuevo. Es este caso, hemos decidido tomar las 5 reglas de mayor lift y las hemos metido en el objeto `groc_hi`. 
+
+```{r groc_hi, message=FALSE, warning=FALSE, paged.print=TRUE}
+groc_hi <- head(sort(groc_rules, by="lift"), 5)
+inspect(groc_hi)
+```
+
+Hecho esto, podemos hacer un plot especial, que nos muestras las reglas completas, junto con un indicador del support (diámetro de los círculos) y lift (color)
+
+```{r message=FALSE, warning=FALSE, include=TRUE, paged.print=TRUE}
+plot(groc_hi, method = "graph", control = list(type="items"))
+```
+
+### Filtremos las reglas por confianza
+También podemos filtrar las reglas por confianza
+```{r groc_hi_conf, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+groc_hi_conf <- head(sort(groc_rules, by="confidence"), 5)
+inspect(groc_hi_conf)
+```
+```{r}
+plot(groc_hi_conf, method = "graph", control = list(type="items"))
+```
+
