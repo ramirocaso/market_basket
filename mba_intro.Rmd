@@ -37,7 +37,7 @@ groc_rules <- apriori(Groceries, parameter = list(supp=0.01, conf=0.03, target="
 
 Ahora procedemos a ver las reglas usando el función `inspect`. Como son muchas reglas (566 reglas en total), vamos a revisar un subconjunto, definido por el lift. En este caso, queremos que nos muestre solo aquellas reglas cuyo lift es mayor que 3. 
 
-```{r echo=FALSE, paged.print=TRUE}
+```{r echo=TRUE, paged.print=TRUE}
 inspect(subset(groc_rules, lift > 3))
 ```
 
@@ -62,7 +62,7 @@ plot(groc_hi, method = "graph", control = list(type="items"))
 
 ### Filtremos las reglas por confianza
 También podemos filtrar las reglas por confianza
-```{r groc_hi_conf, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+```{r groc_hi_conf, echo=TRUE, message=FALSE, warning=FALSE, paged.print=TRUE}
 groc_hi_conf <- head(sort(groc_rules, by="confidence"), 5)
 inspect(groc_hi_conf)
 ```
